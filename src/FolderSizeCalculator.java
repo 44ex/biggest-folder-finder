@@ -27,7 +27,7 @@ public class FolderSizeCalculator extends RecursiveTask<Long>{
         }
 
         for(FolderSizeCalculator task : subTasks){
-            sum += task.join(); // дождемся выполнения задачи и прибавим результат
+            sum += task.join(); // дождемся выполнения задач всех потоков и прибавим результат
         }
 
         return sum;
