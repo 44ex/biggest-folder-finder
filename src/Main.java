@@ -12,13 +12,15 @@ public class Main {
         File file = new File(folderPath);
         long start = System.currentTimeMillis();
 
-        //System.out.println(getFolderSize(file));
         FolderSizeCalculator calculator = new FolderSizeCalculator(file);
         // класс, позволяющий запускать множество потоков
         ForkJoinPool pool = new ForkJoinPool();
         long size = pool.invoke(calculator);
-        System.out.println(size);
-        System.out.println(getHumanReadableSize(size));
+
+        System.out.println("Path  " + folderPath);
+        System.out.println("Bytes total: \t" + size);
+        System.out.println("Human readable:\t" + getHumanReadableSize(size));
+        System.out.println("Human to Bytes:\t" + getSizeFromHumanReadable(getHumanReadableSize(size)));
 
         long duration = System.currentTimeMillis() - start;
         System.out.println(duration + " ms");
@@ -76,16 +78,41 @@ public class Main {
 //    }
 //-----------------------------------------------------------------------------------
 //    // Вариант 3
-public static String getHumanReadableSize(long size){
-    String[] sizeMarks = {"B","Kb","Mb","Gb","Tb"};
-    String strSize = Long.toString(size);
-    for(int i=0; i<5; i++) {
-        if (strSize.length()/(3*(i+1)) == 0) {
-            return String.format("%.2f%s",(double)size/Math.pow(1024,i), sizeMarks[i]);
+    public static String getHumanReadableSize(long size){
+        String[] sizeMarks = {"B","Kb","Mb","Gb","Tb"};
+        String strSize = Long.toString(size);
+        for(int i=0; i<5; i++) {
+            if (strSize.length()/(3*(i+1)) == 0) {
+                return String.format("%.2f%s",(double)size/Math.pow(1024,i), sizeMarks[i]);
+            }
         }
+        return "Размер от пентабайта и больше";
     }
-    return "Размер от пентабайта и больше";
-}
-//-----------------------------------------------------------------------------------
+    // TODO: //4B, 234Kb, 36Mb, 34Gb, 42Tb
+    //       //4B, 234K,  36M,  34G,  42T
+    public static long getSizeFromHumanReadable(String size){
+        int multiplier = -1;
+        // предполагаем, что size корректен, т.е. меньше пентабайта
+        if(size.contains("B"))multiplier = 0; else
+        if(size.contains("K"))multiplier = 1; else
+        if(size.contains("M"))multiplier = 2; else
+        if(size.contains("G"))multiplier = 3; else
+        if(size.contains("T"))multiplier = 4;
 
+        long length;
+        if(size.contains(",")){ // если size содержит дробную часть
+            String part[] = size.split(",");
+            part[1] = part[1].replaceAll("[^0-9]", "");
+            length = (int) Math.pow(1024, multiplier) *
+                      Long.valueOf(part[0])
+                   + (int) Math.pow(1024, multiplier) *
+                      Long.valueOf(part[1])/(int) Math.pow(10, part[1].length())
+            ;
+        }
+        else { // если size содержит только целую часть
+            length = (int) Math.pow(1024, multiplier) *
+                    Long.valueOf(size.replaceAll("[^0-9]", ""));
+        }
+        return length;
+    }
 }
