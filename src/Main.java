@@ -10,17 +10,23 @@ public class Main {
         //String folderPath = "C:\\Users\\Dmitry\\Desktop";
         String folderPath = "C:\\Downloads";
         File file = new File(folderPath);
+        Node root = new Node(file); // содержит дерево всех папок,
+                                    // на которые указывает folderPath
         long start = System.currentTimeMillis();
 
-        FolderSizeCalculator calculator = new FolderSizeCalculator(file);
+        FolderSizeCalculator calculator = new FolderSizeCalculator(root);
         // класс, позволяющий запускать множество потоков
         ForkJoinPool pool = new ForkJoinPool();
-        long size = pool.invoke(calculator);
+//        long size = pool.invoke(calculator);
+        pool.invoke(calculator);
 
         System.out.println("Path  " + folderPath);
-        System.out.println("Bytes total: \t" + size);
-        System.out.println("Human readable:\t" + getHumanReadableSize(size));
-        System.out.println("Human to Bytes:\t" + getSizeFromHumanReadable(getHumanReadableSize(size)));
+        System.out.println("Bytes total: \t" + root.getSize());
+        System.out.println("Human readable:\t" + getHumanReadableSize(root.getSize()));
+        System.out.println("Human to Bytes:\t" + getSizeFromHumanReadable(getHumanReadableSize(root.getSize())));
+//        System.out.println("Bytes total: \t" + size);
+//        System.out.println("Human readable:\t" + getHumanReadableSize(size));
+//        System.out.println("Human to Bytes:\t" + getSizeFromHumanReadable(getHumanReadableSize(size)));
 
         long duration = System.currentTimeMillis() - start;
         System.out.println(duration + " ms");

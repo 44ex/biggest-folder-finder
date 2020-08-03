@@ -4,14 +4,19 @@ import java.util.List;
 import java.util.concurrent.RecursiveTask;
 
 public class FolderSizeCalculator extends RecursiveTask<Long>{
-    private File folder;
+    private Node node;
 
-    public FolderSizeCalculator(File folder){
-        this.folder = folder;
+    public FolderSizeCalculator(Node node){
+        this.node   = node;
     }
 
     @Override
     protected Long compute(){ // у всех классов RecursiveTask есть метод compute()
+        // начиная с корневой ноды, проверяем, является ли текущая нода файлом
+        // если нет, получаем список всех файлов и папок внутри текущей
+        // создаем для всех из них новые ноды, и добавляем в нашу исходную ноду
+        // и по каждой отдельной ноде запускаем задачу, которая рекурсивно делает то же самое
+        File folder = node.getFolder();
         if(folder.isFile()){
             return folder.length();
         }
@@ -21,15 +26,18 @@ public class FolderSizeCalculator extends RecursiveTask<Long>{
 
         File[] files = folder.listFiles();
         for(File file : files){
-            FolderSizeCalculator task = new FolderSizeCalculator(file);
+            Node child = new Node(file);
+            FolderSizeCalculator task = new FolderSizeCalculator(child);
             task.fork(); // запускаем асинхронно, т.е. выделяем в отдельный поток
             subTasks.add(task);
+            node.addChild(child);
         }
 
         for(FolderSizeCalculator task : subTasks){
             sum += task.join(); // дождемся выполнения задач всех потоков и прибавим результат
         }
 
-        return sum;
+        node.setSize(sum);
+        return sum; // сумма размеров (длин) всех файлов
     }
 }
