@@ -70,5 +70,15 @@ public class Main {
 // VCS => Git => Remotes => В табличке Git Remotes
 // выбрать репозиторий (а в первый раз - вставить путь к нему, взятый на GitHub)
 // VCS => Git => Push
+// Чтобы изменить коммент к комиту в локальном репозитории в Идее до Push,
+// зайти в Log, пкм и выбрать Reword или F2.
 //
-
+// https://github.com/sortedmap/biggest-folder-finder/tree/master/src
+//
+//java -jar biggest-folder-finder.jar -d /C/Downloads -l 1Gb   - для Git Bash
+//cd /c/Users/Dmitry/IdeaProjects/biggest-folder-finder/out/  - для Git Bash
+//
+//java -jar biggest-folder-finder.jar -d C:/Downloads -l 1Gb   - для Git CMD и CMD
+//cd c:/Users/Dmitry/IdeaProjects/biggest-folder-finder/out/  - для Git CMD и CMD
+//
+// https://github.com/44ex/biggest-folder-finder/commits/master 
